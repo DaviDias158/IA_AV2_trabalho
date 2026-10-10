@@ -58,9 +58,10 @@ resultados_classificadores = [
 ]
 print(
     f"{'Classificador':<31} | {'Acurácia':<17} | {'Precisão':<17} | "
-    f"{'F1-Score':<17} | {'Tempo Treino (s)':<19} | {'Tempo Teste (s)':<18}"
+    f"{'Recall':<17} | {'F1-Score':<17} | "
+    f"{'Tempo Treino (s)':<19} | {'Tempo Teste (s)':<18}"
 )
-print("-" * 133)
+print("-" * 154)
 
 for nome, resultado in resultados_classificadores:
     media = resultado["media"]
@@ -70,6 +71,7 @@ for nome, resultado in resultados_classificadores:
         f"{nome:<31} | "
         f"{formatar_resultado(media['acuracia'], desvio['acuracia']):<17} | "
         f"{formatar_resultado(media['precisao'], desvio['precisao']):<17} | "
+        f"{formatar_resultado(media['recall'], desvio['recall']):<17} | "
         f"{formatar_resultado(media['f1_score'], desvio['f1_score']):<17} | "
         f"{formatar_resultado(media['tempo_treino'], desvio['tempo_treino']):<19} | "
         f"{formatar_resultado(media['tempo_teste'], desvio['tempo_teste']):<18}"
