@@ -76,6 +76,8 @@ for nome, resultado in resultados_classificadores:
     )
 
 #item e)
+# Para regressao, usamos R2, R2 ajustado e MAE; acuracia, precisao,
+# recall e F1-score sao metricas de classificacao.
 print("\ne)")
 resultado_knn_reg_euclidiana = k_fold_regressao(
     X_regressao,
@@ -109,8 +111,31 @@ resultados_regressores = [
     ("Regressao linear multipla", resultado_regressao_linear),
 ]
 
+print("\nComparacao dos regressores (5-fold)")
 print(
     f"{'Regressor':<28} | {'R2':<17} | {'R2 ajustado':<17} | "
     f"{'MAE':<17} | {'Tempo Treino (s)':<19} | {'Tempo Teste (s)':<18}"
 )
 print("-" * 128)
+
+# ALTERACAO: imprime uma linha numerica para cada um dos tres regressores.
+for nome, resultado in resultados_regressores:
+    media = resultado["media"]
+    desvio = resultado["desvio_padrao"]
+
+    r2 = formatar_resultado(media["r2_score"], desvio["r2_score"])
+    r2_ajustado = formatar_resultado(
+        media["r2_score_ajus"], desvio["r2_score_ajus"]
+    )
+    mae = formatar_resultado(media["mae"], desvio["mae"])
+    tempo_treino = formatar_resultado(
+        media["tempo_treino"], desvio["tempo_treino"]
+    )
+    tempo_teste = formatar_resultado(
+        media["tempo_teste"], desvio["tempo_teste"]
+    )
+
+    print(
+        f"{nome:<28} | {r2:<17} | {r2_ajustado:<17} | "
+        f"{mae:<17} | {tempo_treino:<19} | {tempo_teste:<18}"
+    )
