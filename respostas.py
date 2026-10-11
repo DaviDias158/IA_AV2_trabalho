@@ -2,6 +2,7 @@ import numpy as np
 
 from k_fold import k_fold_classificacao, k_fold_regressao
 
+
 #Leitura
 dados_regressao = np.loadtxt("cpu_small_227.csv", delimiter=",", skiprows=1)
 X_regressao = dados_regressao[:, 1:-1]
@@ -15,8 +16,10 @@ y_classificacao = dados_classificacao[:, -1].astype(int) #.astype(int) serva pra
 #print("Dados de classificação:", X_classificacao.shape, y_classificacao.shape)
 #print("Classes encontradas:", np.unique(y_classificacao))
 
+
 #item a)
 print("\na)")
+
 resultado_knn_euclidiana = k_fold_classificacao(
     X_classificacao,
     y_classificacao,
@@ -24,7 +27,9 @@ resultado_knn_euclidiana = k_fold_classificacao(
     k_folds=5,
     distancia="euclidean",
 )
+
 print("Teste com distancia Euclidiana concluido.")
+
 
 resultado_knn_manhattan = k_fold_classificacao(
     X_classificacao,
@@ -33,22 +38,35 @@ resultado_knn_manhattan = k_fold_classificacao(
     k_folds=5,
     distancia="manhattan",
 )
+
 print("Teste com distancia Manhattan concluido.")
+
 
 #item b)
 print("\nb)")
+
 resultado_naive_bayes = k_fold_classificacao(
     X_classificacao,
     y_classificacao,
     modelo="naive_bayes",
     k_folds=5,
 )
+
 print("Teste do Naive Bayes univariado concluído.")
+
 
 #item d)
 print("\nd)")
+
+
 def formatar_resultado(media, desvio):
     return f"{media:.3f} ± {desvio:.3f}"
+
+
+# ALTERACAO: os tempos são exibidos com mais casas decimais para evitar
+# que valores muito pequenos apareçam como 0.000 ± 0.000.
+def formatar_tempo(media, desvio):
+    return f"{media:.6f} ± {desvio:.6f}"
 
 
 resultados_classificadores = [
@@ -56,12 +74,16 @@ resultados_classificadores = [
     ("K-vizinhos (dist. Manhattan)", resultado_knn_manhattan),
     ("Bayesiano (Univariado)", resultado_naive_bayes),
 ]
+
+
 print(
     f"{'Classificador':<31} | {'Acurácia':<17} | {'Precisão':<17} | "
     f"{'Recall':<17} | {'F1-Score':<17} | "
-    f"{'Tempo Treino (s)':<19} | {'Tempo Teste (s)':<18}"
+    f"{'Tempo Treino (s)':<23} | {'Tempo Teste (s)':<23}"
 )
-print("-" * 154)
+
+print("-" * 162)
+
 
 for nome, resultado in resultados_classificadores:
     media = resultado["media"]
@@ -73,14 +95,17 @@ for nome, resultado in resultados_classificadores:
         f"{formatar_resultado(media['precisao'], desvio['precisao']):<17} | "
         f"{formatar_resultado(media['recall'], desvio['recall']):<17} | "
         f"{formatar_resultado(media['f1_score'], desvio['f1_score']):<17} | "
-        f"{formatar_resultado(media['tempo_treino'], desvio['tempo_treino']):<19} | "
-        f"{formatar_resultado(media['tempo_teste'], desvio['tempo_teste']):<18}"
+        f"{formatar_tempo(media['tempo_treino'], desvio['tempo_treino']):<23} | "
+        f"{formatar_tempo(media['tempo_teste'], desvio['tempo_teste']):<23}"
     )
+
 
 #item e)
 # Para regressao, usamos R2, R2 ajustado e MAE; acuracia, precisao,
 # recall e F1-score sao metricas de classificacao.
 print("\ne)")
+
+
 resultado_knn_reg_euclidiana = k_fold_regressao(
     X_regressao,
     y_regressao,
@@ -88,7 +113,9 @@ resultado_knn_reg_euclidiana = k_fold_regressao(
     k_folds=5,
     distancia="euclidean",
 )
+
 print("Teste de regressao com distancia Euclidiana concluido.")
+
 
 resultado_knn_reg_manhattan = k_fold_regressao(
     X_regressao,
@@ -97,7 +124,9 @@ resultado_knn_reg_manhattan = k_fold_regressao(
     k_folds=5,
     distancia="manhattan",
 )
+
 print("Teste de regressao com distancia Manhattan concluido.")
+
 
 resultado_regressao_linear = k_fold_regressao(
     X_regressao,
@@ -105,7 +134,9 @@ resultado_regressao_linear = k_fold_regressao(
     modelo="linear_regression",
     k_folds=5,
 )
+
 print("Teste de regressao linear multipla concluido.")
+
 
 resultados_regressores = [
     ("KNN (dist. Euclidiana)", resultado_knn_reg_euclidiana),
@@ -113,31 +144,53 @@ resultados_regressores = [
     ("Regressao linear multipla", resultado_regressao_linear),
 ]
 
+
 print("\nComparacao dos regressores (5-fold)")
+
 print(
     f"{'Regressor':<28} | {'R2':<17} | {'R2 ajustado':<17} | "
-    f"{'MAE':<17} | {'Tempo Treino (s)':<19} | {'Tempo Teste (s)':<18}"
+    f"{'MAE':<17} | {'Tempo Treino (s)':<23} | {'Tempo Teste (s)':<23}"
 )
-print("-" * 128)
+
+print("-" * 138)
+
 
 # ALTERACAO: imprime uma linha numerica para cada um dos tres regressores.
+# Os tempos usam seis casas decimais para representar melhor valores muito pequenos.
 for nome, resultado in resultados_regressores:
     media = resultado["media"]
     desvio = resultado["desvio_padrao"]
 
-    r2 = formatar_resultado(media["r2_score"], desvio["r2_score"])
+    r2 = formatar_resultado(
+        media["r2_score"],
+        desvio["r2_score"]
+    )
+
     r2_ajustado = formatar_resultado(
-        media["r2_score_ajus"], desvio["r2_score_ajus"]
+        media["r2_score_ajus"],
+        desvio["r2_score_ajus"]
     )
-    mae = formatar_resultado(media["mae"], desvio["mae"])
-    tempo_treino = formatar_resultado(
-        media["tempo_treino"], desvio["tempo_treino"]
+
+    mae = formatar_resultado(
+        media["mae"],
+        desvio["mae"]
     )
-    tempo_teste = formatar_resultado(
-        media["tempo_teste"], desvio["tempo_teste"]
+
+    tempo_treino = formatar_tempo(
+        media["tempo_treino"],
+        desvio["tempo_treino"]
+    )
+
+    tempo_teste = formatar_tempo(
+        media["tempo_teste"],
+        desvio["tempo_teste"]
     )
 
     print(
-        f"{nome:<28} | {r2:<17} | {r2_ajustado:<17} | "
-        f"{mae:<17} | {tempo_treino:<19} | {tempo_teste:<18}"
+        f"{nome:<28} | "
+        f"{r2:<17} | "
+        f"{r2_ajustado:<17} | "
+        f"{mae:<17} | "
+        f"{tempo_treino:<23} | "
+        f"{tempo_teste:<23}"
     )
