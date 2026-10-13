@@ -8,12 +8,8 @@ class MRegression:
         self.N = X.shape[0]
 
     def fit(self):
-        # ALTERAÇÃO: usa uma variável local para não modificar self.X ao adicionar o intercepto.
         X = np.column_stack((np.ones(self.N), self.X))
 
-        # ALTERAÇÃO: calcula a pseudoinversa diretamente de X. Isso é numericamente
-        # mais estável do que calcular pinv(X.T @ X), especialmente com atributos
-        # em escalas muito diferentes, como ocorre no cpu_small_227.csv.
         self.beta = np.linalg.pinv(X) @ self.y
 
     def predict(self, X_new):
