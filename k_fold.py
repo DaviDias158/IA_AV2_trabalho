@@ -6,10 +6,6 @@ from nb_gaussiano import NaiveBayes
 from linear_regression_m import MRegression
 from matrix_confusion import accuracy, precision, recall, f1_score
 
-
-# ALTERAÇÃO: a professora não forneceu este método; esta função cria os folds
-# manualmente, sem usar scikit-learn. Na classificação, distribui cada classe
-# entre os folds para manter a proporção de classes tão equilibrada quanto possível.
 def _criar_folds(n_amostras, k_folds=5, y=None, random_state=42):
     if k_folds < 2 or k_folds > n_amostras:
         raise ValueError("k_folds deve ser pelo menos 2 e não pode superar o número de amostras.")
@@ -33,8 +29,6 @@ def _criar_folds(n_amostras, k_folds=5, y=None, random_state=42):
     return [np.asarray(fold, dtype=int) for fold in folds]
 
 
-# ALTERAÇÃO: a padronização é calculada apenas com o fold de treinamento.
-# Esses mesmos valores são usados no teste para evitar vazamento de informação.
 def _padronizar(X_train, X_test):
     media = np.mean(X_train, axis=0)
     desvio = np.std(X_train, axis=0)
@@ -44,9 +38,6 @@ def _padronizar(X_train, X_test):
     X_test = (X_test - media) / desvio
     return X_train, X_test
 
-
-# ALTERAÇÃO: padroniza a interface dos três modelos para que o K-Fold consiga
-# treinar cada um da mesma maneira, embora as classes originais tenham interfaces diferentes.
 def _treinar_modelo(modelo, X_train, y_train, tarefa, distancia, k_vizinhos):
     inicio = time.perf_counter()
 
@@ -66,8 +57,6 @@ def _treinar_modelo(modelo, X_train, y_train, tarefa, distancia, k_vizinhos):
     return classificador, tempo_treino
 
 
-# ALTERAÇÃO: calcula médias e desvios padrão dos resultados obtidos em cada fold.
-# Usa desvio padrão amostral (ddof=1) para resumir a variação entre os folds.
 def _resumir_resultados(resultados_folds):
     metricas = resultados_folds[0].keys()
     media = {}
@@ -83,14 +72,12 @@ def _resumir_resultados(resultados_folds):
 
 def k_fold_classificacao(X, y, modelo="knn", k_folds=5, distancia="euclidean",
                          k_vizinhos=5, padronizar=True, random_state=42):
-    #Avalia um classificador por K-Fold e retorna métricas por fold, médias e desvios. modelo: "knn" ou "naive_bayes". distancia: "euclidean" ou "manhattan" (usada pelo KNN).
     X = np.asarray(X, dtype=np.float64)
     y = np.asarray(y)
     folds = _criar_folds(len(X), k_folds, y=y, random_state=random_state)
     resultados_folds = []
 
     for i in range(k_folds):
-        # Cada fold é usado uma vez para teste; os demais são usados para treino.
         indices_teste = folds[i]
         indices_treino = np.concatenate([folds[j] for j in range(k_folds) if j != i])
 
@@ -133,14 +120,12 @@ def k_fold_classificacao(X, y, modelo="knn", k_folds=5, distancia="euclidean",
 
 def k_fold_regressao(X, y, modelo="knn", k_folds=5, distancia="euclidean",
                       k_vizinhos=5, padronizar=True, random_state=42):
-    #Avalia um regressor por K-Fold e retorna métricas por fold, médias e desvios. modelo: "knn" ou "linear_regression". distancia: "euclidean" ou "manhattan" (usada pelo KNN).
     X = np.asarray(X, dtype=np.float64)
     y = np.asarray(y, dtype=np.float64)
     folds = _criar_folds(len(X), k_folds, random_state=random_state)
     resultados_folds = []
 
     for i in range(k_folds):
-        # Cada fold é usado uma vez para teste; os demais são usados para treino.
         indices_teste = folds[i]
         indices_treino = np.concatenate([folds[j] for j in range(k_folds) if j != i])
 
@@ -160,7 +145,6 @@ def k_fold_regressao(X, y, modelo="knn", k_folds=5, distancia="euclidean",
         y_pre = np.asarray(regressor.predict(X_test), dtype=np.float64).reshape(-1)
         tempo_teste = time.perf_counter() - inicio
 
-        # Métricas de regressão calculadas com NumPy, independentemente do modelo.
         erro = y_test - y_pre
         mae = np.mean(np.abs(erro))
         denominador = np.sum((y_test - np.mean(y_test)) ** 2)
