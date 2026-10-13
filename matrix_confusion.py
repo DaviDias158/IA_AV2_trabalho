@@ -1,12 +1,9 @@
 import numpy as np
 
-# ALTERAÇÃO: o dataset de classificação possui 4 classes (0, 1, 2 e 3),
-# então a matriz de confusão precisa funcionar para mais de duas classes.
 def confusion_matrix(y_test, y_pre):
   classes = np.unique(np.concatenate((y_test, y_pre)))
   matrix = np.zeros((len(classes), len(classes)), dtype=int)
 
-  # Linhas = classe real; colunas = classe prevista.
   for real, pred in zip(y_test, y_pre):
     i = np.where(classes == real)[0][0]
     j = np.where(classes == pred)[0][0]
@@ -14,13 +11,9 @@ def confusion_matrix(y_test, y_pre):
 
   return matrix, classes
 
-# ALTERAÇÃO: em vez de receber VP, VN, FP e FN prontos (caso binário),
-# as funções recebem os rótulos reais e previstos e calculam as métricas.
 def accuracy(y_test, y_pre):
   return np.mean(np.asarray(y_test) == np.asarray(y_pre))
 
-# ALTERAÇÃO: em multiclasse, precision, recall e F1 são calculados por classe.
-# Por padrão usamos macro-média: cada classe tem o mesmo peso.
 def precision(y_test, y_pre):
   matrix, classes = confusion_matrix(y_test, y_pre)
   precisions = []
