@@ -1,33 +1,24 @@
 import numpy as np
 
-
-# KNN adaptado para classificação e regressão.
 class KNN:
     def __init__(self, k=5, task="classification", distance="euclidean"):
         self.k = k
         self.task = task
-        self.distance = distance  # ALTERAÇÃO: permite escolher euclidiana ou Manhattan.
+        self.distance = distance
 
     def fit(self, X_train, y_train):
-        # metodo do treinamento da maquina
-        self.X_train = np.asarray(X_train) #ALTERAÇÃO
-        self.y_train = np.asarray(y_train) #ALTERAÇÃO
+        self.X_train = np.asarray(X_train)
+        self.y_train = np.asarray(y_train)
 
     def calculate_distances(self, x1, x2):
-        # ALTERAÇÃO: mantém a distância euclidiana da professora como padrão
-        # e acrescenta a distância Manhattan exigida no trabalho.
         if self.distance == "euclidean":
             return np.sqrt(np.sum((x1 - x2) ** 2))
         elif self.distance == "manhattan":
             return np.sum(np.abs(x1 - x2))
         else:
-            # ALTERAÇÃO: sinaliza uma opção de distância inválida com um erro.
             raise ValueError("A distância deve ser 'euclidean' ou 'manhattan'.")
 
-    def calculate_predict(self, x): #ALTERAÇÃO, MUITO DIFERENTE DO DA CYNTHIA
-            # ALTERAÇÃO: calcula todas as distâncias com operações vetorizadas do NumPy.
-            # O resultado é o mesmo do cálculo individual, mas evita milhares de
-            # chamadas Python para cada amostra, que deixavam o K-Fold muito lento.
+    def calculate_predict(self, x): 
             if self.distance == "euclidean":
                 distances = np.sqrt(np.sum((self.X_train - x) ** 2, axis=1))
             elif self.distance == "manhattan":
@@ -46,7 +37,6 @@ class KNN:
             else:
                 raise ValueError("Tarefa sera regressao ou classificacao!")
 
-    def predict(self, X_test): #ALTERAÇÃO, MUITO DIFERENTE DO DA CYNTHIA
-            # Mantém a lógica original da professora: prevê uma amostra por vez.
+    def predict(self, X_test):
             predictions = [self.calculate_predict(x) for x in X_test]
             return np.asarray(predictions)
