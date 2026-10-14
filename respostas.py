@@ -49,6 +49,8 @@ print("Teste do Naive Bayes univariado concluído.")
 print("\nd)")
 def formatar_resultado(media, desvio):
     return f"{media:.3f} ± {desvio:.3f}"
+def formatar_tempo(media, desvio):
+    return f"{media:.6f} ± {desvio:.6f}"
 
 
 resultados_classificadores = [
@@ -73,7 +75,7 @@ for nome, resultado in resultados_classificadores:
         f"{formatar_resultado(media['precisao'], desvio['precisao']):<17} | "
         f"{formatar_resultado(media['recall'], desvio['recall']):<17} | "
         f"{formatar_resultado(media['f1_score'], desvio['f1_score']):<17} | "
-        f"{formatar_resultado(media['tempo_treino'], desvio['tempo_treino']):<19} | "
+        f"{formatar_tempo(media['tempo_treino'], desvio['tempo_treino']):<22} | "
         f"{formatar_resultado(media['tempo_teste'], desvio['tempo_teste']):<18}"
     )
 
@@ -126,7 +128,7 @@ for nome, resultado in resultados_regressores:
         media["r2_score_ajus"], desvio["r2_score_ajus"]
     )
     mae = formatar_resultado(media["mae"], desvio["mae"])
-    tempo_treino = formatar_resultado(
+    tempo_treino = formatar_tempo(
         media["tempo_treino"], desvio["tempo_treino"]
     )
     tempo_teste = formatar_resultado(
