@@ -59,3 +59,26 @@ def f1_score(y_test, y_pre):
     f1_scores.append(2 * p * r / (p + r) if (p + r) > 0 else 0)
 
   return np.mean(f1_scores)
+
+
+
+def specificity(y_test, y_pre):
+    matrix, classes = confusion_matrix(y_test, y_pre)
+
+    especificidades = []
+    total = np.sum(matrix)
+
+    for i, classe in enumerate(classes):
+        VP = matrix[i, i]
+        FP = np.sum(matrix[:, i]) - VP
+        FN = np.sum(matrix[i, :]) - VP
+        VN = total - VP - FP - FN
+
+        if (VN + FP) > 0:
+            especificidade = VN / (VN + FP)
+        else:
+            especificidade = 0
+
+        especificidades.append(especificidade)
+
+    return np.mean(especificidades)

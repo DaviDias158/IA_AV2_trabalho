@@ -141,3 +141,4 @@ for nome, resultado in resultados_regressores:
         f"{nome:<28} | {r2:<17} | {r2_ajustado:<17} | "
         f"{mae:<17} | {tempo_treino:<19} | {tempo_teste:<18}"
     )
+
