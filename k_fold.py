@@ -6,6 +6,7 @@ from knn import KNN
 from nb_gaussiano import NaiveBayes
 from linear_regression_m import MRegression
 from perceptron_multiclasse import PerceptronMulticlasse
+from mlp import MLPRegressor
 
 from matrix_confusion import (
     accuracy,
@@ -77,7 +78,10 @@ def _treinar_modelo(
     distancia,
     k_vizinhos,
     learning_rate=0.01,
-    epochs=100
+    epochs=100,
+    hidden_layers=(16,),
+    activation="tanh",
+    random_state=42
 ):
     inicio = time.perf_counter()
 
@@ -102,6 +106,18 @@ def _treinar_modelo(
             learning_rate=learning_rate,
             epochs=epochs
         )
+        classificador.fit(X_train, y_train)
+
+
+    elif modelo == "mlp" and tarefa == "regression":
+        classificador = MLPRegressor(
+            hidden_layers=hidden_layers,
+            activation=activation,
+            learning_rate=learning_rate,
+            epochs=epochs,
+            random_state=random_state
+        )
+
         classificador.fit(X_train, y_train)
 
     else:
@@ -255,6 +271,7 @@ def k_fold_classificacao(
 # REGRESSÃO - K-FOLD
 # ==========================================================
 
+
 def k_fold_regressao(
     X,
     y,
@@ -263,8 +280,13 @@ def k_fold_regressao(
     distancia="euclidean",
     k_vizinhos=5,
     padronizar=True,
-    random_state=42
+    random_state=42,
+    hidden_layers=(16,),
+    activation="tanh",
+    learning_rate=0.01,
+    epochs=100
 ):
+
     X = np.asarray(X, dtype=np.float64)
     y = np.asarray(y, dtype=np.float64)
 
@@ -301,13 +323,19 @@ def k_fold_regressao(
             )
 
         # Treinamento
+       
         regressor, tempo_treino = _treinar_modelo(
             modelo,
             X_train,
             y_train,
             "regression",
             distancia,
-            k_vizinhos
+            k_vizinhos,
+            learning_rate=learning_rate,
+            epochs=epochs,
+            hidden_layers=hidden_layers,
+            activation=activation,
+            random_state=random_state
         )
 
         # Teste
@@ -323,6 +351,8 @@ def k_fold_regressao(
         # Cálculo das métricas de regressão
         erro = y_test - y_pre
 
+        mse = np.mean(erro ** 2)
+        rmse = np.sqrt(mse)
         mae = np.mean(np.abs(erro))
 
         denominador = np.sum(
@@ -351,6 +381,8 @@ def k_fold_regressao(
             "mae": float(mae),
             "tempo_treino": float(tempo_treino),
             "tempo_teste": float(tempo_teste),
+            "mse": float(mse),
+            "rmse": float(rmse),
         })
 
     media, desvio_padrao = _resumir_resultados(
