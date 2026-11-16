@@ -1,13 +1,12 @@
-
 import numpy as np
 
-
 class Perceptron:
-    def __init__(self, learning_rate=0.01, epochs=100):
+    def __init__(self, learning_rate=100, epochs=100):
         self.learning_rate = learning_rate
         self.epochs = epochs
         self.weights = None
         self.bias = None
+        self.n_updates = 0
 
     def fit(self, X, y):
         # Identifica a quantidade de amostras e atributos
@@ -16,10 +15,17 @@ class Perceptron:
         # Inicializa pesos e bias com zero
         self.weights = np.zeros(n_features)
         self.bias = 0.0
+        self.n_updates = 0
 
         # Processo de treinamento
+        gerador = np.random.default_rng(42)
         for _ in range(self.epochs):
-            for idx, x_i in enumerate(X):
+
+            # Embaralha os índices das amostras a cada época
+            indices = gerador.permutation(n_samples)
+
+            for idx in indices:
+                x_i = X[idx]
 
                 # Calcula a soma ponderada
                 linear_output = np.dot(x_i, self.weights) + self.bias
@@ -29,6 +35,8 @@ class Perceptron:
 
                 # Ajusta os pesos quando ocorre um erro
                 if y[idx] != y_predicted:
+                    self.n_updates += 1
+
                     update = self.learning_rate * (y[idx] - y_predicted)
 
                     self.weights += update * x_i
